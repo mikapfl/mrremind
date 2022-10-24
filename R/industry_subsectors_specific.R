@@ -50,47 +50,47 @@
 #' @rdname industry_subsector_specific
 readindustry_subsectors_specific <- function(subtype = NULL) {
   # file path (for easier debugging)
-  path <- './'
+  path <- "./"
   # path <- '~/PIK/swap/inputdata/sources/industry_subsectors_specific/'
 
   # subtype switchboard ----
   switchboard <- list(
-    'FE' = function() {
-      read_csv(file = file.path(path, 'specific_FE.csv'),
-               col_types = 'cccd',
-               comment = '#',
+    "FE" = function() {
+      read_csv(file = file.path(path, "specific_FE.csv"),
+               col_types = "cccd",
+               comment = "#",
                progress = FALSE) %>%
         madrat_mule()
     },
 
-    'material_alpha' = function() {
-      read_csv(file = file.path(path, 'specific_material_alpha.csv'),
-               col_types = 'cccdi',
-               comment = '#',
+    "material_alpha" = function() {
+      read_csv(file = file.path(path, "specific_material_alpha.csv"),
+               col_types = "cccdi",
+               comment = "#",
                progress = FALSE) %>%
         madrat_mule()
     },
 
-    'material_relative' = function() {
-      read_csv(file = file.path(path, 'specific_material_relative.csv'),
-               col_types = 'ccccd',
-               comment = '#',
+    "material_relative" = function() {
+      read_csv(file = file.path(path, "specific_material_relative.csv"),
+               col_types = "ccccd",
+               comment = "#",
                progress = FALSE) %>%
         madrat_mule()
     },
 
-    'material_relative_change' = function() {
-      read_csv(file = file.path(path, 'specific_material_relative_change.csv'),
-               col_types = 'ccccd',
-               comment = '#',
+    "material_relative_change" = function() {
+      read_csv(file = file.path(path, "specific_material_relative_change.csv"),
+               col_types = "ccccd",
+               comment = "#",
                progress = FALSE) %>%
         madrat_mule()
     })
 
   # check if the subtype called is available ----
   if (!subtype %in% names(switchboard)) {
-    stop(paste('Invalid subtype -- supported subtypes are:',
-               paste(names(switchboard), collapse = ', ')))
+    stop(paste("Invalid subtype -- supported subtypes are:",
+               paste(names(switchboard), collapse = ", ")))
   }
 
   # load data and to whatever ----
@@ -102,23 +102,23 @@ readindustry_subsectors_specific <- function(subtype = NULL) {
 calcindustry_subsectors_specific <- function(subtype = NULL, scenarios = NULL,
                                              regions = NULL) {
   if (is.null(scenarios)) {
-    stop('Scenario definitions missing.')
+    stop("Scenario definitions missing.")
   }
 
   if (is.null(regions)) {
-    stop('Region definitions missing.')
+    stop("Region definitions missing.")
   }
 
   . <- NULL
 
   return(list(
-    x = readSource(type = 'industry_subsectors_specific', subtype = subtype,
+    x = readSource(type = "industry_subsectors_specific", subtype = subtype,
                    convert = FALSE) %>%
       madrat_mule() %>%
       tool_expand_tibble(scenarios, regions,
-                         structure.columns = 'subsector') %>%
+                         structure.columns = "subsector") %>%
       pivot_longer(
-        !all_of(names(which('character' == unlist(lapply(., typeof)))))) %>%
+        !all_of(names(which("character" == unlist(lapply(., typeof)))))) %>%
       as.magpie(spatial = 0, temporal = 0, data = ncol(.)),
-    weight = NULL, unit = '', description = ''))
+    weight = NULL, unit = "", description = ""))
 }

@@ -1,7 +1,7 @@
 
 calcWeightNash <- function() {
-  
-  x <- readSource("REMIND_11Regi",subtype="nashWeight")
+
+  x <- readSource("REMIND_11Regi", subtype = "nashWeight")
   getNames(x) <- NULL
 
   return(list(x           = x,

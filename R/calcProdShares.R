@@ -5,12 +5,12 @@
 
 
 
-calcProdShares <- function(){
+calcProdShares <- function() {
   x <- readSource(type = "ProdShares")
-  
-return(list(x=x, 
-            weight=NULL,
-              unit="",
-            description= "share of world manufacture for solar pv modules and wind turbines"))
-  
+
+return(list(x = x,
+            weight = NULL,
+              unit = "",
+            description = "share of world manufacture for solar pv modules and wind turbines"))
+
 }

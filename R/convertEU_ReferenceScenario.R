@@ -16,7 +16,7 @@ convertEU_ReferenceScenario <- function(x, subtype) {
   # fill up zero countries
   iso3 <- read.csv2("isotwo2iso3Mapping.csv", stringsAsFactors = FALSE)
   getItems(x, dim = 1) <- sapply(getItems(x, dim = 1), function(y) iso3[which(iso3[, 1] == y), 2])
-  
+
   x <- toolCountryFill(x, fill = NA, verbosity = 2)
 
   EU_27 <- c(
@@ -32,7 +32,7 @@ convertEU_ReferenceScenario <- function(x, subtype) {
     EU <- EU_27
   }
 
-  x.eu <- x[EU,,]
+  x.eu <- x[EU, , ]
   x.eu[is.na(x.eu)] <- 0
   x[EU, , ] <- x.eu[EU, , ]
 

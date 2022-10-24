@@ -15,16 +15,16 @@
 
 #' @export
 calcindustry_specific_FE_limits <- function() {
-  return(list(x = readSource(type = 'ExpertGuess',
-                             subtype = 'industry_specific_FE_limits',
+  return(list(x = readSource(type = "ExpertGuess",
+                             subtype = "industry_specific_FE_limits",
                              convert = FALSE) %>%
                 madrat_mule() %>%
-                filter('absolute' == .data$type) %>%
-                select(-'type') %>%
-                mutate(subsector = paste0('ue_', .data$subsector)) %>%
+                filter("absolute" == .data$type) %>%
+                select(-"type") %>%
+                mutate(subsector = paste0("ue_", .data$subsector)) %>%
                 as.magpie(spatial = 0, temporal = 0, data = 2),
               weight = NULL,
-              unit = 'GJ/t',
-              description = paste('Thermodynamic limits for industry subsector',
-                                  'specific FE demand')))
+              unit = "GJ/t",
+              description = paste("Thermodynamic limits for industry subsector",
+                                  "specific FE demand")))
 }

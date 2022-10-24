@@ -21,39 +21,37 @@
 
 readEEA_EuropeanEnvironmentAgency <- function(subtype) {
   if (subtype == "ETS") {
-    #2020 data
+    # 2020 data
     data <- read.csv("ETS_Database_v44.csv", sep = "\t")
     # 2019 data
-    #data <- read.csv("ETS_Database_v38.csv", sep = "\t")
+    # data <- read.csv("ETS_Database_v38.csv", sep = "\t")
     data <- data[, -c(2, 5)]
     data$year <- as.numeric(as.character(data$year))
     data <- data[(!(is.na(data$year))), ]
     colnames(data) <- c("region", "ETS_info", "sector", "value", "period")
-    data$region <- toolCountry2isocode(data$region, warn = F)
+    data$region <- toolCountry2isocode(data$region, warn = FALSE)
     data <- data[(!(is.na(data$region))), ]
     data$ETS_info <- gsub(pattern = "\\.", replacement = "_", data$ETS_info)
     data$sector <- gsub(pattern = "\\.", replacement = "", data$sector)
     data$value <- as.numeric(gsub(" ", "", data$value)) / 1000000
     data <- data[, c(1, 5, 2, 3, 4)]
     x <- as.magpie(data, spatial = 1, temporal = 2, datacol = 5)
-  }
-  else if (subtype == "ESR") {
+  } else if (subtype == "ESR") {
     # 2020 data
-    data <- read_excel(path = "EEA_GHG_ESD_Dec 2020.xlsx", trim_ws = T)
+    data <- read_excel(path = "EEA_GHG_ESD_Dec 2020.xlsx", trim_ws = TRUE)
     data <- data[, c(1:3)]
     # 2019 data
-    # data <- read_excel(path = "ESD-GHG_2019_revised.xlsx", trim_ws = T, skip = 11)
+    # data <- read_excel(path = "ESD-GHG_2019_revised.xlsx", trim_ws = TRUE, skip = 11)
     # data <- data[, c(1, 17:30)]
     # data <- melt(data, id.vars = 1)
     colnames(data) <- c("region", "period", "value")
-    data$region <- toolCountry2isocode(data$region, warn = F)
+    data$region <- toolCountry2isocode(data$region, warn = FALSE)
     data <- data[(!(is.na(data$region))), ]
     data$variable <- "Emi|GHG|ESR (Mt CO2-equiv/yr)"
     data <- data[, c(1, 2, 4, 3)]
     x <- as.magpie(data, spatial = 1, temporal = 2, datacol = 4)
-  }
-  else if (subtype == "total") {
-    data <- read_excel(path = "GHG_Total_historical.xlsx", trim_ws = T)
+  } else if (subtype == "total") {
+    data <- read_excel(path = "GHG_Total_historical.xlsx", trim_ws = TRUE)
     data$...1 <- NULL
     eur <- c(
       "AUT", "BEL", "BGR", "HRV", "CYP", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC", "HUN", "ISL", "IRL",
@@ -67,14 +65,13 @@ readEEA_EuropeanEnvironmentAgency <- function(subtype) {
     data$variable <- paste0(data$variable, sep = " ", "(Mt CO2-equiv/yr)")
     data <- data[, c(1, 2, 4, 3)]
     x <- as.magpie(data, spatial = 2, temporal = 1, datacol = 4)
-  }
-  else if (subtype == "sectoral") {
+  } else if (subtype == "sectoral") {
     sheets <- excel_sheets("GHG_ETS_ES_Projections_by_sector.xlsx")
     historical <- NULL
     timeframe <- seq(2005, 2017) # excluding WEM projections
 
     for (s in sheets) {
-      tmp <- suppressMessages(read_excel(path = "GHG_ETS_ES_Projections_by_sector.xlsx", sheet = s, skip = 1, trim_ws = T))
+      tmp <- suppressMessages(read_excel(path = "GHG_ETS_ES_Projections_by_sector.xlsx", sheet = s, skip = 1, trim_ws = TRUE))
       tmp <- melt(tmp, id.vars = 1)
       tmp <- mutate(tmp, !!sym("value") := ifelse(is.na(!!sym("value")), 0, !!sym("value"))) # set 0s for NAs
       colnames(tmp) <- c("label", "period", "value")
@@ -84,7 +81,7 @@ readEEA_EuropeanEnvironmentAgency <- function(subtype) {
 
     mapping.variable <- as.data.frame(
       cbind(
-        variable=c(
+        variable = c(
           "Emi|GHG|ETS",
           "Emi|GHG|Energy|ETS",
           "Emi|GHG|Industry|ETS",
@@ -95,7 +92,7 @@ readEEA_EuropeanEnvironmentAgency <- function(subtype) {
           "Emi|GHG|Agriculture|ESR",
           "Emi|GHG|Waste|ESR"
         ),
-        label=c(
+        label = c(
           "Emissions Trading System (stationary installations)",
           "Energy Industries",
           "Other stationary installations",
@@ -115,8 +112,7 @@ readEEA_EuropeanEnvironmentAgency <- function(subtype) {
     historical$label <- NULL
     historical <- historical[, c(1, 4, 2, 3)]
     x <- as.magpie(historical, spatial = 2, datacol = 4, temporal = 3)
-  }
-  else if (subtype == "projections") {
+  } else if (subtype == "projections") {
 
     projections <- read.csv(file = "GHG_projections/GHG_projections_2021_EEA.csv", stringsAsFactors = FALSE, strip.white = TRUE) %>%
       filter(!!sym("CountryCode") != "", !!sym("CountryCode") != "EU", !!sym("Final.Gap.filled") != as.double(0), !is.na(!!sym("Final.Gap.filled"))) %>%
@@ -130,8 +126,7 @@ readEEA_EuropeanEnvironmentAgency <- function(subtype) {
     x <- as.magpie(projections, spatial = 1, temporal = 2, datacol = 6)
 
     return(x)
-  }
-  else if (subtype == "projections-detailed") {
+  } else if (subtype == "projections-detailed") {
 
     files <- list.files(path = "GHG_projections_detailed/2022/")
 
@@ -152,15 +147,14 @@ readEEA_EuropeanEnvironmentAgency <- function(subtype) {
         !!sym("Year") := as.numeric(!!sym("Year")),
         !!sym("Value") := as.numeric(!!sym("Value"))
       ) %>%
-      select(6,3,2,1,4,5) %>%
+      select(6, 3, 2, 1, 4, 5) %>%
       distinct()
 
 
     x <- as.magpie(projections, spatial = 1, temporal = 2, datacol = 6)
 
     return(x)
-  }
-  else {
+  } else {
     stop("Not a valid subtype!")
   }
 

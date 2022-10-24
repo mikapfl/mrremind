@@ -11,8 +11,8 @@
 #' @author Lavinia Baumstark
 #' @seealso \code{\link{readSource}}
 #' @examples
-#'
-#' \dontrun{ a <- readSource(type="ExpertGuess",subtype="ies")
+#' \dontrun{
+#' a <- readSource(type = "ExpertGuess", subtype = "ies")
 #' }
 #'
 #' @importFrom magrittr %>%
@@ -21,7 +21,7 @@
 
 readExpertGuess <- function(subtype) {
   # for easier debugging
-  path <- './'
+  path <- "./"
 
   if (subtype == "ies") {
     a <- read.csv("ies.csv", sep = ";")
@@ -56,20 +56,20 @@ readExpertGuess <- function(subtype) {
     getYears(out) <- "2005"
   }
 
-  if ('Chinese_Steel_Production' == subtype) {
-    out <- read_csv(file = file.path(path, 'Chinese_Steel_Production.csv'),
-                    comment = '#',
+  if ("Chinese_Steel_Production" == subtype) {
+    out <- read_csv(file = file.path(path, "Chinese_Steel_Production.csv"),
+                    comment = "#",
                     show_col_types = FALSE) %>%
       madrat_mule()
-  } else if ('industry_specific_FE_limits' == subtype) {
-    out <- read_csv(file = file.path(path, 'industry_specific_FE_limits.csv'),
-                    comment = '#',
+  } else if ("industry_specific_FE_limits" == subtype) {
+    out <- read_csv(file = file.path(path, "industry_specific_FE_limits.csv"),
+                    comment = "#",
                     show_col_types = FALSE) %>%
       madrat_mule()
-  } else if ('industry_max_secondary_steel_share' == subtype) {
+  } else if ("industry_max_secondary_steel_share" == subtype) {
     out <- read_csv(
-      file = file.path(path, 'industry_max_secondary_steel_share.csv'),
-      comment = '#',
+      file = file.path(path, "industry_max_secondary_steel_share.csv"),
+      comment = "#",
       show_col_types = FALSE
     ) %>%
       madrat_mule()

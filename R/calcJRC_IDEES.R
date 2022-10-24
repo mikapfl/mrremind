@@ -72,8 +72,8 @@ calcJRC_IDEES <- function(subtype) {
     toolCountryFill(fill = NA)
 
   # fill smaller EU-countries with 0s to allow for aggregation of EU-region
-  x[c("ALA", "FRO", "GIB", "GGY", "IMN", "JEY"),,] <- 0
-  
+  x[c("ALA", "FRO", "GIB", "GGY", "IMN", "JEY"), , ] <- 0
+
   return(list(x = x, weight = NULL,
               unit = "billion US$2005/yr, EJ/yr, Mt CO2/yr, Mt/yr",
               description = "Historical JRC IDEES values as REMIND variables"))

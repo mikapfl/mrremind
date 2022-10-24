@@ -497,7 +497,7 @@ readEuropeanEnergyDatasheets <- function(subtype) {
           NA,
           NA,
           "Main Energy Indicators|Overall Renewable share [with aviation cap] (%)",
-          "Main Energy Indicators|RE-T - Renewable energy in Transport (%)",
+          "Main Energy Indicators|RE-TRUE - Renewable energy in Transport (%)",
           "Main Energy Indicators|RES-E - Renewable Electricity Generation (%)",
           "Main Energy Indicators|RES-H&C - Renewable Heating and Cooling (%)",
           NA,

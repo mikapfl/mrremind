@@ -1,7 +1,7 @@
 convertIEA_EVOutlook <- function(x) {
   Non28EUcountries <- c("ALA", "FRO", "GIB", "GGY", "IMN", "JEY")
 
-  w <- calcOutput("GDPPast", aggregate = F)[, "y2015", ]
+  w <- calcOutput("GDPPast", aggregate = FALSE)[, "y2015", ]
   mapping <- toolGetMapping(type = "regional", name = "regionmappingH12.csv")
 
   .removeNaRegions <- function(x) {
@@ -70,7 +70,7 @@ convertIEA_EVOutlook <- function(x) {
   )
 
   # if no finer disaggregation of Europe (countries + Other Europe) is available,
-  # use the coarse disaggregation (Europe to 28 countries) 
+  # use the coarse disaggregation (Europe to 28 countries)
   for (v in getNames(europe)) {
     if (all(is.na(data[getRegions(europe), , v]))) {
       data[getRegions(europe), , v] <- europe[, , v]

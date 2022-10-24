@@ -42,14 +42,14 @@ calcBP <- function() {
       ) %>%
       return()
   }
-  
+
   # Emission
   data <- .convert(readSource("BP", subtype = "Emission"))
 
   # Capacity
   data <- rbind(data, .convert(readSource("BP", subtype = "Capacity")))
-  
-  # Generation  
+
+  # Generation
   data <- rbind(data, .convert(readSource("BP", subtype = "Generation")))
 
   # Consumption
@@ -62,11 +62,11 @@ calcBP <- function() {
     as.magpie() %>%
     dimReduce()
   renewables.vars <- c("Solar Consumption (EJ)", "Wind Consumption (EJ)", "Nuclear Consumption (EJ)", "Hydro Consumption (EJ)")
-  
+
   # recalculate renewables to direct equivalent accounting
   consumption.renewables <- consumption[, , renewables.vars] * renewables.factors
 
-  consumption.fossils <- consumption[, , c(renewables.vars, "Primary Energy Consumption (EJ)"), invert = T]
+  consumption.fossils <- consumption[, , c(renewables.vars, "Primary Energy Consumption (EJ)"), invert = TRUE]
 
   # recalculate total pe consumption to direct equivalent accounting
 
@@ -86,7 +86,7 @@ calcBP <- function() {
     .convert(consumption.renewables),
     .convert(consumption.pe)
   )
-  
+
   # Trade
 
   # calculate net oil trade
@@ -94,13 +94,13 @@ calcBP <- function() {
   trade.oil.net <- trade.oil[, , "Trade|Export|Oil (kb/d)"] - trade.oil[, , "Trade|Import|Oil (kb/d)"]
   getNames(trade.oil.net) <- c("Net Trade|Oil (kb/d)")
   getSets(trade.oil.net) <- c("region", "year", "data")
-  
+
   # calculate net coal trade
   trade.coal <- readSource("BP", subtype = "Trade Coal")
   trade.coal.net <- trade.coal[, , "Trade|Export|Coal (EJ)"] - trade.coal[, , "Trade|Import|Coal (EJ)"]
   getNames(trade.coal.net) <- c("Net Trade|Coal (EJ)")
   getSets(trade.coal.net) <- c("region", "year", "data")
-  
+
   # calculate net gas trade
   trade.gas <- readSource("BP", subtype = "Trade Gas")
   trade.gas.net <- trade.gas[, , "Trade|Export|Gas (bcm)"] - trade.gas[, , "Trade|Import|Gas (bcm)"]
@@ -118,7 +118,7 @@ calcBP <- function() {
   )
 
   # Trade
-  
+
   p <- readSource("BP", subtype = "Price")
   data <- rbind(data, .convert(p))
 
@@ -139,13 +139,13 @@ calcBP <- function() {
     toolCountryFill(fill = 0)
 
   weights <- x
-  weights[,,] <- NA
-  weights[,,"US$2005/GJ", pmatch = T] <- 1
+  weights[, , ] <- NA
+  weights[, , "US$2005/GJ", pmatch = TRUE] <- 1
 
   return(list(
-    x = x, 
+    x = x,
     weight = weights,
-    mixed_aggregation = T, 
+    mixed_aggregation = TRUE,
     unit = c("Mt CO2/yr", "GW", "EJ/yr", "US$2005/GJ"),
     description = "Historical BP values as REMIND variables"
   ))

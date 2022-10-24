@@ -1,7 +1,7 @@
 #' @importFrom utils download.file tail unzip
 
-downloadNIR <- function(subtype=NULL) {
-  
+downloadNIR <- function(subtype = NULL) {
+
   links <- c("http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/aus-2015-crf-27may.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/aut-2015-crf-5nov15.zip",
               "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/blr-2015-crf-7jul16.zip",
@@ -28,7 +28,7 @@ downloadNIR <- function(subtype=NULL) {
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/mlt-2015-crf-6nov15.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/mco-2015-crf-26jul16.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/nld-2016-crf-15jun16.zip",
-             #"http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/nzl-2015-crf-31jul15_crf_reporter_v5.10.0.zip",
+             # "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/nzl-2015-crf-31jul15_crf_reporter_v5.10.0.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/nor-2015-crf-06jan16.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/pol-2015-crf-6nov15.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/prt-2016-crf-27may16.zip",
@@ -42,21 +42,25 @@ downloadNIR <- function(subtype=NULL) {
              "http://unfccc.int/files/national_reports/annex_i_natcom/status_of_submission_of_natcom_under_the_kp/application/zip/tur-2015-crf_regen-12nov15.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/ukr-2015-crf-14jun16.zip",
              "http://unfccc.int/files/national_reports/annex_i_ghg_inventories/national_inventories_submissions/application/zip/gbr-2015-crf-30oct15.zip")
-             
-  
+
+
   ### download files
-  fnames <- sapply(links, function(x){tail(strsplit(x, split = "/")[[1]], 1)})
-  
-  lapply(1:length(links), FUN = function(x){ download.file(links[x], destfile=fnames[x], mode="wb")})
-  
+  fnames <- sapply(links, function(x) {
+tail(strsplit(x, split = "/")[[1]], 1)
+})
+
+  lapply(1:length(links), FUN = function(x) {
+ download.file(links[x], destfile = fnames[x], mode = "wb")
+})
+
   ###  unzip files
-  zipfiles <- list.files(pattern=".zip$")
+  zipfiles <- list.files(pattern = ".zip$")
   lapply(zipfiles, unzip)
   lapply(zipfiles, unlink)
-  
+
   ### delete unwanted files
-  outfiles <- list.files(pattern="^[A-Z]{3}_[0-9]{4}_[0-9]{4}_.*\\.xlsx")
+  outfiles <- list.files(pattern = "^[A-Z]{3}_[0-9]{4}_[0-9]{4}_.*\\.xlsx")
   allfiles <- list.files()
   unlink(allfiles[which(!(allfiles %in% outfiles))])
-  
+
 }

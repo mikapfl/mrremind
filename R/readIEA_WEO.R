@@ -30,22 +30,22 @@ readIEA_WEO <- function(subtype) {
 
       # read WEO 2016 input files- values are from the  New Policy  scenario, except for CCS costs which are from 450 scenario.
       # Coal
-      input_coal <- read.csv(file = "WEO_2016-coal.csv", na.strings = "n.a.", stringsAsFactors = F)
+      input_coal <- read.csv(file = "WEO_2016-coal.csv", na.strings = "n.a.", stringsAsFactors = FALSE)
       input_coal$maintech <- "Coal"
       # Gas
-      input_gas <-  read.csv(file = "WEO_2016-gas.csv", na.strings = "n.a.", stringsAsFactors = F)
+      input_gas <-  read.csv(file = "WEO_2016-gas.csv", na.strings = "n.a.", stringsAsFactors = FALSE)
       input_gas$maintech <- "Gas"
       # Tech with CCS
-      input_ccs <- read.csv(file = "WEO_2016-ccs.csv", na.strings = "n.a.", stringsAsFactors = F)
+      input_ccs <- read.csv(file = "WEO_2016-ccs.csv", na.strings = "n.a.", stringsAsFactors = FALSE)
       input_ccs$maintech <- "CCS"
       # Tech with NUC
-      input_nuc <- read.csv(file = "WEO_2016-nuclear.csv", na.strings = "n.a.", stringsAsFactors = F)
+      input_nuc <- read.csv(file = "WEO_2016-nuclear.csv", na.strings = "n.a.", stringsAsFactors = FALSE)
       input_nuc$maintech <- "Nuclear"
       # Tech with REN
-      input_ren <-  read.csv(file = "WEO_2016-ren.csv", na.strings = "n.a.", stringsAsFactors = F)
+      input_ren <-  read.csv(file = "WEO_2016-ren.csv", na.strings = "n.a.", stringsAsFactors = FALSE)
       input_ren$maintech <- "Renewables"
       # Special case for hydro, values are taken not from the IEA database.
-      input_hydro <- read.csv(file = "hydro.csv", stringsAsFactors = F)
+      input_hydro <- read.csv(file = "hydro.csv", stringsAsFactors = FALSE)
       # removing 2025 values
       input_hydro <- input_hydro %>% select(-5)
 
@@ -80,8 +80,7 @@ readIEA_WEO <- function(subtype) {
         x <- as.magpie(input, spatial = 3, temporal = 4, datacol = 5)
       }
 
-    }
-    else if ((subtype == "Capacity") || (subtype == "Generation") || (subtype == "Emissions")) {
+    } else if ((subtype == "Capacity") || (subtype == "Generation") || (subtype == "Emissions")) {
 
       if (subtype == "Capacity") {
           data <- read.csv("WEO_2017/WEO-capacity.csv", sep = ";")[, c(2, 3, 4, 5)]
@@ -95,12 +94,11 @@ readIEA_WEO <- function(subtype) {
       # creating capacity, generation or emissions magpie object
       x <- as.magpie(data, temporal = 2, spatial = 1, datacol = 4)
 
-    }
-    else if ((subtype == "PE") || (subtype == "FE")) {
+    } else if ((subtype == "PE") || (subtype == "FE")) {
       # read-in sheet names from the excel file
       data_weo2019_sheets <- readxl::excel_sheets("WEO2019_AnnexA.xlsx")
 
-      sheets_balance <- grep("Balance", data_weo2019_sheets, value = T)
+      sheets_balance <- grep("Balance", data_weo2019_sheets, value = TRUE)
 
       tmp_all <- list()
       for (ksheet in sheets_balance) {
@@ -468,17 +466,14 @@ readIEA_WEO <- function(subtype) {
 
       if (subtype == "PE") {
         data_weo2019 <- data_weo2019 %>% filter(variable %in%
-                        grep("Primary Energy", unique(data_weo2019$variable), value = T))
-      }
-      else if (subtype == "FE") {
+                        grep("Primary Energy", unique(data_weo2019$variable), value = TRUE))
+      } else if (subtype == "FE") {
         data_weo2019 <- data_weo2019 %>% filter(variable %in%
-                        grep("Final Energy", unique(data_weo2019$variable), value = T))
+                        grep("Final Energy", unique(data_weo2019$variable), value = TRUE))
       }
 
       x <- as.magpie(data_weo2019, spatial = 1, temporal = 2, datacol = 7)
-    }
-
-    else {
+    } else {
         stop("Not a valid subtype!")
     }
     # x[,,] <- as.numeric(x[,,])

@@ -8,8 +8,8 @@
 
 
 convertIEA_PVPS <- function(x, subtype) {
-  
-  regmapping <- toolGetMapping("regionmappingH12.csv",where = "mappingfolder",type = "regional")
+
+  regmapping <- toolGetMapping("regionmappingH12.csv", where = "mappingfolder", type = "regional")
   x_iso <- toolAggregate(x, regmapping)
  return(x_iso)
-}  
+}

@@ -14,13 +14,13 @@ convertIEA_ETP <- function(x, subtype) {
 
   fe <- calcOutput("FE", source = "IEA", aggregate = FALSE)
 
-  v <- magpply(x[c("OECD", "Non-OECD"), , , invert = T], function(y) all(is.na(y)), MARGIN = 3)
+  v <- magpply(x[c("OECD", "Non-OECD"), , , invert = TRUE], function(y) all(is.na(y)), MARGIN = 3)
   v.oecd.only <- getNames(x[, , v])
 
   if (is.null(v.oecd.only)) {
     v.full <- getNames(x)
   } else {
-    v.full <- getNames(x[, , v.oecd.only, invert = T])
+    v.full <- getNames(x[, , v.oecd.only, invert = TRUE])
   }
 
   # disaggregate ASEAN
@@ -37,7 +37,7 @@ convertIEA_ETP <- function(x, subtype) {
 
   # entries that don't require disaggregation
   x.ctry <- x[c("Brazil", "China", "India", "Mexico", "Russia", "South Africa", "United States"), , v.full]
-  getItems(x.ctry, dim = 1) <- toolCountry2isocode(getItems(x.ctry, dim = 1), warn = F)
+  getItems(x.ctry, dim = 1) <- toolCountry2isocode(getItems(x.ctry, dim = 1), warn = FALSE)
 
   # disaggregate OECD data for variables with both OECD and finer regional granularity
   x.oecd.other <- x[c("OECD", "Non-OECD"), , v.full]

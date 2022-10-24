@@ -1,7 +1,7 @@
 readIEA_EVOutlook <- function() {
   data <- NULL
   for (f in list.files(path = "data")) {
-    data <- rbind(data, read.csv2(paste0("data/",f), sep = ","))
+    data <- rbind(data, read.csv2(paste0("data/", f), sep = ","))
   }
 
   data <- data %>%

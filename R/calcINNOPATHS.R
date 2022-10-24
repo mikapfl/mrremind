@@ -38,12 +38,12 @@ calcINNOPATHS <- function(x) {
 
   weights <- x
   weights[, , ] <- NA
-  weights[, , "US$2005", pmatch = T] <- 1
+  weights[, , "US$2005", pmatch = TRUE] <- 1
 
   return(list(
     x = x,
     weight = weights,
-    mixed_aggregation = T,
+    mixed_aggregation = TRUE,
     unit = "Various",
     description = "INNOPATHS projections as REMIND variables"
   ))

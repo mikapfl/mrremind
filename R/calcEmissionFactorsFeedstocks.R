@@ -23,13 +23,13 @@ calcEmissionFactorsFeedstocks <- function() {
   # read source data ----
 
   # read in FE data from IEA and convert from ktoe to ZJ
-  iea <- readSource("IEA", subtype = "EnergyBalances", convert = T)[, , "NECHEM"] %>% collapseDim() * 4.1868e-5 * 1e-3
+  iea <- readSource("IEA", subtype = "EnergyBalances", convert = TRUE)[, , "NECHEM"] %>% collapseDim() * 4.1868e-5 * 1e-3
   iea[iea == 0] <- NA
   remove <- magpply(iea, function(y) all(is.na(y)), MARGIN = 1)
   iea <- iea[!remove, , ]
 
   # read in emissions from UNFCCC and convert from kt CO2 to GtC
-  emi <- readSource("UNFCCC", convert = F)[, , "Table2(I)s1|Total industrial processes|Chemical industry|CO2.kt CO2"] * 1e-6 / 3.666666666667
+  emi <- readSource("UNFCCC", convert = FALSE)[, , "Table2(I)s1|Total industrial processes|Chemical industry|CO2.kt CO2"] * 1e-6 / 3.666666666667
   remove <- magpply(emi, function(y) all(is.na(y)), MARGIN = 1)
   emi <- emi[!remove, , ]
 
@@ -67,7 +67,7 @@ calcEmissionFactorsFeedstocks <- function() {
       select("products") %>%
       pull()
 
-    fe.demand[, , g] <- dimSums(iea[, , products], dim = 3, na.rm = T)
+    fe.demand[, , g] <- dimSums(iea[, , products], dim = 3, na.rm = TRUE)
   }
 
   fe.demand[fe.demand == 0] <- NA
@@ -91,7 +91,7 @@ calcEmissionFactorsFeedstocks <- function() {
   }
 
   # total carbon used in chemicals in GtC (GtC/ZJ * ZJ = GtC)
-  total.carbon <- dimSums(carbon.use, dim = 3, na.rm = T)
+  total.carbon <- dimSums(carbon.use, dim = 3, na.rm = TRUE)
 
   # calculate emission factors (GtC/ZJ) for chemical solids, liquids, gases ----
   # emission factors = carbon used * (chemicals process emissions / total carbon used in chemicals) / energy demand in chemicals
@@ -185,9 +185,9 @@ calcEmissionFactorsFeedstocks <- function() {
   # create weights ----
 
   weights <- new.magpie(cells_and_regions = getItems(x, dim = 1), years = getItems(x, dim = 2))
-  iea <- readSource("IEA", subtype = "EnergyBalances", convert = T)[, c(2005, 2010, 2015), "NECHEM"] %>%
+  iea <- readSource("IEA", subtype = "EnergyBalances", convert = TRUE)[, c(2005, 2010, 2015), "NECHEM"] %>%
     collapseDim() %>%
-    dimSums(dim = 3, na.rm = T) * 4.1868e-5 * 1e-3
+    dimSums(dim = 3, na.rm = TRUE) * 4.1868e-5 * 1e-3
   weights[, c(2005, 2010, 2015), ] <- iea
   weights[, c(seq(2020, 2060, 5), seq(2070, 2100, 10), seq(2110, 2150, 20)), ] <- weights[, 2015, ]
 

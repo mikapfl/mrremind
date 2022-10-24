@@ -28,7 +28,7 @@ calcEmissionFactors <- function(subtype = "emission_factors", sectoral_resolutio
 
     # Get minimum values across country group
     tmp <- as.quitte(id_ef[ip_countryGroup, ip_year, ip_scenario]) %>%
-      group_by(!!!syms(c('data1', 'data2'))) %>%
+      group_by(!!!syms(c("data1", "data2"))) %>%
       summarise(value = ifelse(all(.data$value == 0), 0,
                                min(.data$value[.data$value > 0], na.rm = TRUE))
                 ) %>%  # a value 0 is often a sign for a NA that has been replaced with 0 for small countries

@@ -66,7 +66,7 @@ readEU_ReferenceScenario <- function(subtype) {
   }
 
   data <- aggregate(. ~ REMIND + region, data = data, FUN = sum)
-  
+
   # long format
   data <- melt(data, id.vars = 1:2)
   colnames(data) <- c("variable", "region", "period", "value")

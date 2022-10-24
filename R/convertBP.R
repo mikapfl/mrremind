@@ -25,7 +25,7 @@ convertBP <- function(x, subtype) {
 
   .removeNaYears <- function(x) {
     remove <- magpply(x, function(y) all(is.na(y)), MARGIN = 2)
-    return(x[,!remove, ])
+    return(x[, !remove, ])
   }
 
 
@@ -39,14 +39,14 @@ convertBP <- function(x, subtype) {
     mapping_full <- toolGetMapping("regionmappingBP_Full.csv", type = "regional")
 
     # iso countries in x
-    ctry <- toolCountry2isocode(getItems(x, dim = 1), warn = F)
+    ctry <- toolCountry2isocode(getItems(x, dim = 1), warn = FALSE)
     ctry <- ctry[!is.na(ctry)]
 
     # mapping of regions to iso countries other than in ctry (i.e. other regions)
     mapping_regions <- mapping_full[mapping_full$Region_name %in% regions &
                                       !mapping_full$ISO3.code %in% ctry & mapping_full$ISO3.code != "SUN", ]
 
-    weight = PE[mapping_regions$ISO3.code, 2014, "PE (EJ/yr)"]
+    weight <- PE[mapping_regions$ISO3.code, 2014, "PE (EJ/yr)"]
 
     # disaggregation of other regions to iso countries
     x2 <- toolAggregate(x[regions, , ], rel = mapping_regions, weight = weight)
@@ -55,7 +55,7 @@ convertBP <- function(x, subtype) {
 
     # iso countries in x that do not need to be disaggregated
     x1 <- x[regions, , invert = TRUE]
-    getItems(x1, dim = 1) <- toolCountry2isocode(getItems(x1, dim = 1), warn = F)
+    getItems(x1, dim = 1) <- toolCountry2isocode(getItems(x1, dim = 1), warn = FALSE)
     x1 <- toolCountryFill(x1, fill = 0, verbosity = 2)
 
     # combine the two objects
@@ -70,18 +70,18 @@ convertBP <- function(x, subtype) {
     for (n in getNames(x)) {
       tmp <- x[, , n]
       tmp <- .removeNaYears(tmp)
-      x1[, getItems(tmp, dim = 2), n] <- dimSums(tmp[intersect(getItems(x, dim = 1), from), , ], dim = 1, na.rm = T)
+      x1[, getItems(tmp, dim = 2), n] <- dimSums(tmp[intersect(getItems(x, dim = 1), from), , ], dim = 1, na.rm = TRUE)
     }
 
-    return(mbind(x[from, , invert = T], x1))
+    return(mbind(x[from, , invert = TRUE], x1))
   }
 
   getItems(x, dim = 1) <- gsub("\\bUS\\b", "USA", getItems(x, dim = 1))
   getItems(x, dim = 1) <- gsub(pattern = "China Hong Kong SAR", "Hong Kong", x = getItems(x, dim = 1))
 
   # for now, we exclude data from Sowjet Union (recorded until 1993)
-  x <- x["USSR & Central Europe",,invert = T]
-  x <- x["USSR",,invert = T]
+  x <- x["USSR & Central Europe", , invert = TRUE]
+  x <- x["USSR", , invert = TRUE]
 
   if (subtype == "Emission") {
     x <- .mergeReg(x, from = c("Central America", "Other Caribbean", "Other South America"), to = "S & C America")
@@ -95,9 +95,7 @@ convertBP <- function(x, subtype) {
 
     x <- .disaggregate_regions(x, regions)
 
-  }
-
-  else if (subtype == "Capacity") {
+  } else if (subtype == "Capacity") {
 
     x <- .mergeReg(x, from = c("Other Europe"), to = "Europe")
     x <- .mergeReg(x, from = c("Other Middle East"), to = "Middle East")
@@ -113,9 +111,7 @@ convertBP <- function(x, subtype) {
       .disaggregate_regions(x[, , "Capacity|Wind (MW)"], regions),
       .disaggregate_regions(x[, , "Capacity|Geothermal (MW)"], regions)
     )
-  }
-
-  else if (subtype == "Generation") {
+  } else if (subtype == "Generation") {
 
     x <- .mergeReg(x, from = c("Other Africa", "Other Northern Africa", "Other Southern Africa",
                                "Middle Africa", "Eastern Africa", "Western Africa"), to = "Africa")
@@ -129,21 +125,19 @@ convertBP <- function(x, subtype) {
     regions <- c("Africa", "Asia Pacific", "CIS", "Europe", "Middle East", "S & C America")
 
     x <- mbind(
-      .disaggregate_regions(x[,,"Generation|Wind (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Solar (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Hydro (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Geo_biomass (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Nuclear (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Electricity (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Electricity|Renewable (EJ)"], regions),
-      .disaggregate_regions(x[,,"Generation|Electricity|Gas (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Electricity|Oil (TWh)"], regions),
-      .disaggregate_regions(x[,,"Generation|Electricity|Coal (TWh)"], regions)
+      .disaggregate_regions(x[, , "Generation|Wind (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Solar (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Hydro (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Geo_biomass (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Nuclear (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Electricity (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Electricity|Renewable (EJ)"], regions),
+      .disaggregate_regions(x[, , "Generation|Electricity|Gas (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Electricity|Oil (TWh)"], regions),
+      .disaggregate_regions(x[, , "Generation|Electricity|Coal (TWh)"], regions)
     )
 
-  }
-
-  else if (subtype == "Production") {
+  } else if (subtype == "Production") {
 
     regions <- c("Africa", "Asia Pacific", "CIS", "Europe", "Middle East", "S & C America")
 
@@ -155,14 +149,12 @@ convertBP <- function(x, subtype) {
     x <- .mergeReg(x, from = c("Other CIS"), to = "CIS")
 
     x <- mbind(
-      .disaggregate_regions(x[,,"Oil Production (million t)"], regions),
-      .disaggregate_regions(x[,,"Coal Production (EJ)"], regions),
-      .disaggregate_regions(x[,,"Coal Production (t)"], regions),
-      .disaggregate_regions(x[,,"Gas Production (EJ)"], regions)
+      .disaggregate_regions(x[, , "Oil Production (million t)"], regions),
+      .disaggregate_regions(x[, , "Coal Production (EJ)"], regions),
+      .disaggregate_regions(x[, , "Coal Production (t)"], regions),
+      .disaggregate_regions(x[, , "Gas Production (EJ)"], regions)
     )
-  }
-
-  else if (subtype == "Consumption") {
+  } else if (subtype == "Consumption") {
 
     regions <- c("Africa", "Asia Pacific", "CIS", "Europe", "Middle East", "S & C America")
 
@@ -174,19 +166,17 @@ convertBP <- function(x, subtype) {
     x <- .mergeReg(x, from = c("Other CIS"), to = "CIS")
 
     x <- mbind(
-      .disaggregate_regions(x[,,"Primary Energy Consumption (EJ)"], regions),
-      .disaggregate_regions(x[,,"Liquids Consumption (kb/d)"], regions),
-      .disaggregate_regions(x[,,"Oil Consumption (EJ)"], regions),
-      .disaggregate_regions(x[,,"Gas Consumption (EJ)"], regions),
-      .disaggregate_regions(x[,,"Coal Consumption (EJ)"], regions),
-      .disaggregate_regions(x[,,"Solar Consumption (EJ)"], regions),
-      .disaggregate_regions(x[,,"Wind Consumption (EJ)"], regions),
-      .disaggregate_regions(x[,,"Nuclear Consumption (EJ)"], regions),
-      .disaggregate_regions(x[,,"Hydro Consumption (EJ)"], regions)
+      .disaggregate_regions(x[, , "Primary Energy Consumption (EJ)"], regions),
+      .disaggregate_regions(x[, , "Liquids Consumption (kb/d)"], regions),
+      .disaggregate_regions(x[, , "Oil Consumption (EJ)"], regions),
+      .disaggregate_regions(x[, , "Gas Consumption (EJ)"], regions),
+      .disaggregate_regions(x[, , "Coal Consumption (EJ)"], regions),
+      .disaggregate_regions(x[, , "Solar Consumption (EJ)"], regions),
+      .disaggregate_regions(x[, , "Wind Consumption (EJ)"], regions),
+      .disaggregate_regions(x[, , "Nuclear Consumption (EJ)"], regions),
+      .disaggregate_regions(x[, , "Hydro Consumption (EJ)"], regions)
     )
-  }
-
-  else if (subtype == "Trade Oil") {
+  } else if (subtype == "Trade Oil") {
 
     getItems(x, dim = 1) <- gsub("S & Cent America", "S & C America", getItems(x, dim = 1))
 
@@ -255,9 +245,7 @@ convertBP <- function(x, subtype) {
 
     oil_regions <- c("Africa", "Asia Pacific", "CIS", "Middle East", "S & C America", "Europe")
     x <- .disaggregate_regions(x.trade, oil_regions)
-  }
-
-  else if (subtype == "Trade Gas") {
+  } else if (subtype == "Trade Gas") {
     x <- .mergeReg(x, from = c("Other Asia", "OECD Asia"), to = "Asia Pacific")
     x <- .mergeReg(x, from = c("Other CIS"), to = "CIS")
     x <- .mergeReg(x, from = c("Other North America"), to = "North America")
@@ -265,9 +253,7 @@ convertBP <- function(x, subtype) {
 
     gas_regions <- c("Africa", "Asia Pacific", "CIS", "Middle East", "S & C America", "Europe", "North America")
     x <- .disaggregate_regions(x, gas_regions)
-  }
-
-  else if (subtype == "Trade Coal") {
+  } else if (subtype == "Trade Coal") {
     getItems(x, dim = 1) <- gsub("S & Cent America", "S & C America", getItems(x, dim = 1))
 
     trade.export.coal <- .removeNaRegions(x[, , "Trade|Export|Coal (EJ)"])
@@ -285,9 +271,7 @@ convertBP <- function(x, subtype) {
     trade.import.coal <- .disaggregate_regions(trade.import.coal, coal_regions)
 
     x <- mbind(trade.export.coal, trade.import.coal)
-  }
-
-  else if (subtype == "Price") {
+  } else if (subtype == "Price") {
     x.price <- new.magpie(getISOlist(), getYears(x), getNames(x))
     x.price[getISOlist(), , ] <- x["GLO", , ]
 
@@ -319,9 +303,7 @@ convertBP <- function(x, subtype) {
     price.coal <- toolCountryFill(price.coal, fill = 0, verbosity = 2)
 
     x <- mbind(x.price, price.gas, price.coal)
-  }
-
-  else {
+  } else {
     stop("Not a valid subtype!")
   }
 

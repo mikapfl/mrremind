@@ -70,9 +70,9 @@ convertECLIPSE <- function(x, subtype) {
       # group_by(region, sector,variable,scenario) %>%
       group_by(!!!syms(grp_cols)) %>%
       mutate(rank = min_rank(.data$period),
-             value = ifelse(  all(is.na(.data$value))
-                            | !any(is.na(.data$value))
-                            | !is.na(.data$value),
+             value = ifelse(all(is.na(.data$value))                            |
+ !any(is.na(.data$value))                            |
+ !is.na(.data$value),
                             .data$value,
                             ifelse(.data$rank < min(.data$rank[!is.na(.data$value)]),
                                    .data$value[.data$rank == min(.data$rank[!is.na(.data$value)])],
@@ -82,7 +82,7 @@ convertECLIPSE <- function(x, subtype) {
                                              .data$value[closest(.data$period, .data$value, place = "below")]) / 2))),
              value = ifelse(is.na(.data$value), 0, .data$value)) %>%
       ungroup() %>%
-      select(-'rank') %>%
+      select(-"rank") %>%
       as.data.frame() %>%
       as.quitte()
 

@@ -25,24 +25,23 @@
 #' tribble(
 #'   ~scenario,   ~region,   ~value,
 #'   NA,          NA,        0,
-#'   NA,          'CHA',     1,
-#'   'SSP1',      NA,        2,
-#'   'SSP2EU',    'DEU',     3) %>%
-#'   tool_expand_tibble(scenarios = c('SSP1', 'SSP2EU', 'SSP5'),
-#'                      regions = c('CHA', 'DEU', 'USA')) %>%
-#'   pivot_wider(names_from = 'region')
+#'   NA,          "CHA",     1,
+#'   "SSP1",      NA,        2,
+#'   "SSP2EU",    "DEU",     3) %>%
+#'   tool_expand_tibble(scenarios = c("SSP1", "SSP2EU", "SSP5"),
+#'                      regions = c("CHA", "DEU", "USA")) %>%
+#'   pivot_wider(names_from = "region")
 #'
 #' tribble(
 #'   ~scenario,   ~region,   ~name,   ~value,
-#'   NA,          NA,        'A',     0,
-#'   NA,          'CHA',     'B',     1,
-#'   'SSP1',      NA,        'A',     2,
-#'   'SSP2EU',    'DEU',     'B',     3) %>%
-#'   tool_expand_tibble(scenarios = c('SSP1', 'SSP2EU', 'SSP5'),
-#'                      regions = c('CHA', 'DEU', 'USA'),
-#'                      structure.columns = 'name')
+#'   NA,          NA,        "A",     0,
+#'   NA,          "CHA",     "B",     1,
+#'   "SSP1",      NA,        "A",     2,
+#'   "SSP2EU",    "DEU",     "B",     3) %>%
+#'   tool_expand_tibble(scenarios = c("SSP1", "SSP2EU", "SSP5"),
+#'                      regions = c("CHA", "DEU", "USA"),
+#'                      structure.columns = "name")
 #' }
-
 #' @export
 tool_expand_tibble <- function(d, scenarios, regions,
                                structure.columns = NULL) {
@@ -57,7 +56,7 @@ tool_expand_tibble <- function(d, scenarios, regions,
   d.scenario <- d %>%
     filter(!is.na(.data$scenario), .data$scenario %in% scenarios,
            is.na(.data$region)) %>%
-    complete(nesting(!!!syms(setdiff(colnames(.), 'region'))),
+    complete(nesting(!!!syms(setdiff(colnames(.), "region"))),
              region = regions) %>%
     filter(!is.na(.data$region))
 
@@ -65,14 +64,14 @@ tool_expand_tibble <- function(d, scenarios, regions,
   d.region <- d %>%
     filter(is.na(.data$scenario),
            !is.na(.data$region), .data$region %in% regions) %>%
-    complete(nesting(!!!syms(setdiff(colnames(.), 'scenario'))),
+    complete(nesting(!!!syms(setdiff(colnames(.), "scenario"))),
              scenario = scenarios) %>%
     filter(!is.na(.data$scenario))
 
   # entries with neither scenario nor regions defined
   d.global <- d %>%
     filter(is.na(.data$scenario), is.na(.data$region)) %>%
-    complete(nesting(!!!syms(setdiff(colnames(.), c('scenario', 'region')))),
+    complete(nesting(!!!syms(setdiff(colnames(.), c("scenario", "region")))),
              scenario = scenarios,
              region = regions) %>%
     filter(!is.na(.data$scenario), !is.na(.data$region))
@@ -83,21 +82,21 @@ tool_expand_tibble <- function(d, scenarios, regions,
     anti_join(
       d.scenario,
 
-      c('scenario', 'region', structure.columns)
+      c("scenario", "region", structure.columns)
     ) %>%
     bind_rows(d.scenario) %>%
     # regions overwrite global and scenario data
     anti_join(
       d.region,
 
-      c('scenario', 'region', structure.columns)
+      c("scenario", "region", structure.columns)
     ) %>%
     bind_rows(d.region) %>%
     # specific data overwrites everything
     anti_join(
       d.scenario.region,
 
-      c('scenario', 'region', structure.columns)
+      c("scenario", "region", structure.columns)
     ) %>%
     bind_rows(d.scenario.region) %>%
     select(all_of(colnames(d))) %>%

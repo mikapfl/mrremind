@@ -15,11 +15,11 @@
 #'
 #'
 readIEA_EV <- function(subtype) {
-  
+
   # use file from 2019 GEVO, with additional 2019 numbers from 2020 GEVO
   file <- "GlobalEVOutlook2019-2020_TableA1-A6.xlsx"
   subtypes <- c("combSales", "combStock", "bevSales", "bevStock", "phevSales", "phevStock")
-  
+
   if (!subtype %in% subtypes) {
     stop(
       "Invalid subtype -- supported subtypes are: ",

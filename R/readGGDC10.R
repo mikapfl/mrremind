@@ -1,8 +1,8 @@
 #' Read GGDC 10-Sector Database - https://www.rug.nl/ggdc/structuralchange/previous-sector-database/10-sector-2014
 #' @author Renato Rodrigues
 #' @examples
-#'  \dontrun{
-#' a <- readSource("GGDC10",convert=F)
+#' \dontrun{
+#' a <- readSource("GGDC10", convert = FALSE)
 #' }
 #'
 #' @importFrom magclass as.magpie

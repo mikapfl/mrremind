@@ -25,15 +25,15 @@ calcCement <- function() {
   transition_year <- 2005
   . <- NULL
 
-  d_vanRuijvan2016 <- readSource('vanRuijven2016', convert = FALSE) %>%
+  d_vanRuijvan2016 <- readSource("vanRuijven2016", convert = FALSE) %>%
     madrat_mule()
 
-  d_USGS_cement <- readSource('USGS', 'cement', convert = FALSE) %>%
+  d_USGS_cement <- readSource("USGS", "cement", convert = FALSE) %>%
     madrat_mule() %>%
-    group_by(!!!syms(c('iso3c', 'year'))) %>%
+    group_by(!!!syms(c("iso3c", "year"))) %>%
     filter(max(.data$reporting.year) == .data$reporting.year) %>%
     ungroup() %>%
-    select(-'reporting.year')
+    select(-"reporting.year")
 
   d <- d_USGS_cement %>%
     filter(transition_year <= .data$year)
@@ -42,20 +42,20 @@ calcCement <- function() {
     d,
 
     d_vanRuijvan2016 %>%
-      anti_join(d, c('iso3c', 'year'))
+      anti_join(d, c("iso3c", "year"))
   ) %>%
-    group_by(!!!syms(c('iso3c', 'year'))) %>%
+    group_by(!!!syms(c("iso3c", "year"))) %>%
     mutate(count = n()) %>%
     verify(1 == .data$count,
-           description = 'only one data point per country/year') %>%
-    select(-'count') %>%
-    arrange(!!!syms(c('iso3c', 'year')))
+           description = "only one data point per country/year") %>%
+    select(-"count") %>%
+    arrange(!!!syms(c("iso3c", "year")))
 
   return(list(x = d %>%
                 as.magpie(spatial = 1, temporal = 2, data = ncol(.)) %>%
                 toolCountryFill(verbosity = 2),
               weight = NULL,
-              description = 'historical cement production',
-              unit = 'tonnes of cement',
+              description = "historical cement production",
+              unit = "tonnes of cement",
               min = 0))
 }

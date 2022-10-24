@@ -79,17 +79,17 @@ calcIO <- function(subtype = c("input", "output", "output_biomass", "trade",
 
     # for each product: check if the flow "HEMAINC" > 0, if yes, do nothing;
     # if no, add the value of the flow "ELMAINC" to "ELMAINE" and afterwards set ELMAINC to zero.
-    tmp <- mcalc(data,  ELMAINE ~ ifelse(HEMAINC > 0, ELMAINE, ELMAINC + ELMAINE), append = F)
-    data[,,"ELMAINE"] <- tmp
-    tmp <- mcalc(data,  ELMAINC ~ ifelse(HEMAINC > 0, ELMAINC, 0), append = F)
-    data[,,"ELMAINC"] <- tmp
+    tmp <- mcalc(data,  ELMAINE ~ ifelse(HEMAINC > 0, ELMAINE, ELMAINC + ELMAINE), append = FALSE)
+    data[, , "ELMAINE"] <- tmp
+    tmp <- mcalc(data,  ELMAINC ~ ifelse(HEMAINC > 0, ELMAINC, 0), append = FALSE)
+    data[, , "ELMAINC"] <- tmp
 
     # for each product: check if the flow "HEAUTOC" > 0, if yes, do nothing;
     # if no, add the value of the flow "ELAUTOC" to "ELAUTOE" and afterwards set ELAUTOC to zero.
-    tmp <- mcalc(data,  ELAUTOE ~ ifelse(HEAUTOC > 0, ELAUTOE, ELAUTOC + ELAUTOE), append = F)
-    data[,,"ELAUTOE"] <- tmp
-    tmp <- mcalc(data,  ELAUTOC ~ ifelse(HEAUTOC > 0, ELAUTOC, 0), append = F)
-    data[,,"ELAUTOC"] <- tmp
+    tmp <- mcalc(data,  ELAUTOE ~ ifelse(HEAUTOC > 0, ELAUTOE, ELAUTOC + ELAUTOE), append = FALSE)
+    data[, , "ELAUTOE"] <- tmp
+    tmp <- mcalc(data,  ELAUTOC ~ ifelse(HEAUTOC > 0, ELAUTOC, 0), append = FALSE)
+    data[, , "ELAUTOC"] <- tmp
   }
 
   ieamatch <- read.csv2(mapping, stringsAsFactors = FALSE, na.strings = "")
@@ -109,15 +109,15 @@ calcIO <- function(subtype = c("input", "output", "output_biomass", "trade",
     # check that no dimensions not present in the mapping has been added to the
     # data
     if (!is_empty(setdiff(getNames(data), names_data_before))) {
-      stop('Product/flow combinations not present in mapping added by ',
-           'fix_IEA_data_for_Industry_subsectors():\n',
-           paste(setdiff(getNames(data), names_data_before), collapse = '\n'))
+      stop("Product/flow combinations not present in mapping added by ",
+           "fix_IEA_data_for_Industry_subsectors():\n",
+           paste(setdiff(getNames(data), names_data_before), collapse = "\n"))
     }
     # FIXME remove product/flow combinations from the mapping that have been
     # removed from the data while replacing coke oven and blast furnace outputs
     ieamatch <- ieamatch %>%
       as_tibble() %>%
-      filter(paste(.data$iea_product, .data$iea_flows, sep = '.')
+      filter(paste(.data$iea_product, .data$iea_flows, sep = ".")
              %in% getNames(data))
   }
 
@@ -143,16 +143,16 @@ calcIO <- function(subtype = c("input", "output", "output_biomass", "trade",
            function(item) {
              product_flow <- ieamatch %>%
                filter(item == .data$target) %>%
-               unite('product.flow', c('iea_product', 'iea_flows'),
-                     sep = '.') %>%
-               pull('product.flow')
+               unite("product.flow", c("iea_product", "iea_flows"),
+                     sep = ".") %>%
+               pull("product.flow")
 
              weights <- ieamatch %>%
                filter(item == .data$target) %>%
-               pull('Weight') %>%
+               pull("Weight") %>%
                as.numeric()
 
-             tmp <- dimSums(  data[,,product_flow]
+             tmp <- dimSums(data[, , product_flow]
                             * setNames(as.magpie(weights), product_flow),
                             dim = 3, na.rm = TRUE)
              getNames(tmp) <- item

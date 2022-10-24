@@ -5,41 +5,39 @@
 #' @return magpie object of the subtype tax limit
 #' @author Renato Rodrigues
 #' @examples
-#' 
-#' \dontrun{ 
+#' \dontrun{
 #' calcOutput("TaxLimits")
 #' }
-#' 
+#'
+calcTaxLimits <- function(subtype) {
 
-calcTaxLimits <- function(subtype){
-  
-  if (!(subtype %in% c("maxFeSubsidy","maxPeSubsidy", "propFeSubsidy"))) stop("the argument subtype must be in c('maxFeSubsidy','maxPeSubsidy', 'propFeSubsidy')")
-  
-  if(subtype == "maxFeSubsidy") {
+  if (!(subtype %in% c("maxFeSubsidy", "maxPeSubsidy", "propFeSubsidy"))) stop("the argument subtype must be in c('maxFeSubsidy','maxPeSubsidy', 'propFeSubsidy')")
+
+  if (subtype == "maxFeSubsidy") {
     # Read max final energy subsidy levels
-    output <- readSource("REMIND_11Regi", subtype="maxFeSubsidy")[,,c("fegas","fehos","fesos")]
-    description <- "maximum final energy subsidy levels (in $/Gj) from REMIND version prior to rev. 5429" 
+    output <- readSource("REMIND_11Regi", subtype = "maxFeSubsidy")[, , c("fegas", "fehos", "fesos")]
+    description <- "maximum final energy subsidy levels (in $/Gj) from REMIND version prior to rev. 5429"
     # using final energy to weight the max subsidy levels
-    weight <- calcOutput("FE",aggregate=FALSE)[,2005,"FE (EJ/yr)"]
-  } else if(subtype == "maxPeSubsidy"){
+    weight <- calcOutput("FE", aggregate = FALSE)[, 2005, "FE (EJ/yr)"]
+  } else if (subtype == "maxPeSubsidy") {
     # Read max primary energy subsidy levels
-    output <- readSource("REMIND_11Regi", subtype="maxPeSubsidy")
-    description <- "maximum primary energy subsidy levels (in $/Gj) to provide plausible upper bound: 40$/barrel ~ 8 $/GJ" 
+    output <- readSource("REMIND_11Regi", subtype = "maxPeSubsidy")
+    description <- "maximum primary energy subsidy levels (in $/Gj) to provide plausible upper bound: 40$/barrel ~ 8 $/GJ"
     # using primary energy to weight the max subsidy levels
-    weight <- calcOutput("PE",aggregate=FALSE)[,2005,"PE (EJ/yr)"]
-  } else if(subtype == "propFeSubsidy"){
+    weight <- calcOutput("PE", aggregate = FALSE)[, 2005, "PE (EJ/yr)"]
+  } else if (subtype == "propFeSubsidy") {
     # Read proportional adjustment final energy subsidy levels
-    output <- readSource("REMIND_11Regi", subtype="propFeSubsidy")[,,c("fehoi")]
+    output <- readSource("REMIND_11Regi", subtype = "propFeSubsidy")[, , c("fehoi")]
     getNames(output) <- c("fehos")
-    description <- "subsidy proportional cap to avoid liquids increasing dramatically" 
+    description <- "subsidy proportional cap to avoid liquids increasing dramatically"
     # average weight
-    weight <- new.magpie(getRegions(output),getYears(output),getNames(output),fill=1)
+    weight <- new.magpie(getRegions(output), getYears(output), getNames(output), fill = 1)
   }
-  
+
   # Return tax convergence levels aggregated to selected REMIND regions
-  return(list(x=output, weight=weight,
-              unit="$/GJ", 
-              description=description             
+  return(list(x = output, weight = weight,
+              unit = "$/GJ",
+              description = description
   ))
-  
+
 }

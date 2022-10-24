@@ -49,7 +49,7 @@ calcIEA_EVOutlook <- function() {
     toolCountryFill(fill = NA, verbosity = 2)
 
   # set 0s in other CHA countries than China to approximate CHA as China
-  x[c("HKG", "MAC", "TWN"),,] <- 0
+  x[c("HKG", "MAC", "TWN"), , ] <- 0
 
   return(list(
     x = x,

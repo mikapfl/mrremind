@@ -31,7 +31,7 @@ calcEEAGHGProjections <- function() {
       "`Emi|GHG|Industry|ESR`" = "`Emi|GHG|Industrial Processes|ESR` + `Emi|GHG|Energy|Demand|Industry|ESR`",
       # "`Emi|GHG|Industry`" = "`Emi|GHG|Industry|ETS` + `Emi|GHG|Industry|ESR`",  # currently calculated in detailed source
       "`Emi|GHG|Intl aviation in ETS|ETS`" = "`Emi|GHG|w/ Intl aviation` - `Emi|GHG`",
-      completeMissing = F
+      completeMissing = FALSE
     ) %>%
     mutate(
       !!sym("value") := !!sym("value") / 1000,
@@ -57,7 +57,7 @@ calcEEAGHGProjections <- function() {
       "`Emi|CO2|Industry`" = "`Emi|CO2|Energy|Demand|Industry` + `Emi|CO2|Industrial Processes`",
       "`Emi|GHG|Industry`" = "`Emi|GHG|Energy|Demand|Industry` + `Emi|GHG|Industrial Processes`",
       "`Emi|CO2|Energy|Demand|Buildings`" = "`Emi|CO2|Energy|Demand|Buildings|Residential` + `Emi|CO2|Energy|Demand|Buildings|Commercial`",
-      completeMissing = F, units = c("Mt CO2/yr", "Mt CO2eq/yr", "Mt CO2/yr")
+      completeMissing = FALSE, units = c("Mt CO2/yr", "Mt CO2eq/yr", "Mt CO2/yr")
     ) %>%
     mutate(
       !!sym("variable") := paste0(!!sym("variable"), " (", !!sym("unit"), ")"),

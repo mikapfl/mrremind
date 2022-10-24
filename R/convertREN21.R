@@ -13,7 +13,7 @@ convertREN21 <- function(x, subtype) {
   if (subtype == "Capacity") {
     x <- magpiesort(x) # sorting years chronologically and region names alphabetically
     x[is.na(x)] <- 0 # Converting all NAs to zero
-    getItems(x,dim = 1) <- toolCountry2isocode(getItems(x,dim = 1)) # Country names to ISO3 code
+    getItems(x, dim = 1) <- toolCountry2isocode(getItems(x, dim = 1)) # Country names to ISO3 code
 
     # reading historical data
     hist_cap <- readSource(type = "IRENA", subtype = "Capacity") / 1000 # converting from MW to GW
@@ -42,7 +42,7 @@ convertREN21 <- function(x, subtype) {
     input_yr <- input_yr[input_yr %% 5 != 0] # years not multiple of 5/non-model years
     # Selecting relevant model years
     target_years <- c(2020, 2025, 2030, 2035, 2040)
-    regions <- getItems(x_tmp,dim = 1)
+    regions <- getItems(x_tmp, dim = 1)
     tech_n <- getNames(x_tmp[, , techs])
     for (r in regions) {
       for (t in tech_n) {
@@ -67,7 +67,7 @@ convertREN21 <- function(x, subtype) {
     # for now# x_tmp <- x_tmp[,target_years,] #  only take model years
 
     # Creating new magpie object containing historical or base year targets
-    x_cap <- new.magpie(getItems(x_tmp,dim = 1), target_years, techs)
+    x_cap <- new.magpie(getItems(x_tmp, dim = 1), target_years, techs)
     x_cap[is.na(x_cap)] <- 0 # replacing NAs with zero
     # Capacity factors in REMIND. From : calcOutput("Capacityfactor"...)
     cf_biomass <- 0.75
@@ -80,7 +80,7 @@ convertREN21 <- function(x, subtype) {
 
     year <- getYears(x_tmp)
     for (t in year) {
-      for (r in getItems(x_tmp,dim = 1)) {
+      for (r in getItems(x_tmp, dim = 1)) {
         if (x_tmp[r, t, "AC-Absolute.Base year"] != 0)
           x_cap[r, , ]  <- setYears(hist_cap[r, x_tmp[r, t, "AC-Absolute.Base year"], techs])
         else
@@ -109,12 +109,12 @@ convertREN21 <- function(x, subtype) {
       x_tmp[, target_years, c("AC-Absolute.Biomass", "AC-Absolute.Wind", "AC-Absolute.SolarPV", "AC-Absolute.SolarCSP"), drop = TRUE]
 
     # For hydro converting to additional generation targets
-    x_cap_ac[, , "Hydro"] <- x_cap[, , "Hydro"] + x_tmp[, target_years, "AC-Absolute.Hydro", drop = TRUE] * setYears(cf_hydro[getItems(x_tmp,dim = 1), , ] * 8760)
+    x_cap_ac[, , "Hydro"] <- x_cap[, , "Hydro"] + x_tmp[, target_years, "AC-Absolute.Hydro", drop = TRUE] * setYears(cf_hydro[getItems(x_tmp, dim = 1), , ] * 8760)
 
   # Total installed capacity Targets for all technologies
 
     x_cap_tic[, , c("Wind", "SolarPV", "SolarCSP", "Biomass")] <- pmax(x_cap[, , c("Wind", "SolarPV", "SolarCSP", "Biomass")], x_tmp[, target_years, c("Wind", "SolarPV", "SolarCSP", "Biomass")][, , "TIC-Absolute", drop = TRUE])
-    x_cap_tic[, , "Hydro"] <- pmax(x_cap[, , "Hydro"], x_tmp[, target_years, "TIC-Absolute.Hydro", drop = TRUE] * setYears(cf_hydro[getItems(x_tmp,dim=1), , ] * 8760))
+    x_cap_tic[, , "Hydro"] <- pmax(x_cap[, , "Hydro"], x_tmp[, target_years, "TIC-Absolute.Hydro", drop = TRUE] * setYears(cf_hydro[getItems(x_tmp, dim = 1), , ] * 8760))
 
     # Converting Production targets (GWh) to Capacity targets (TIC-Absolute) (GW) for geothermal and biomass
     # pmax takes the higher value from existing capacity and new capacity derived (from production)
@@ -140,13 +140,13 @@ convertREN21 <- function(x, subtype) {
     data_wind_sorted <- mbind(data_wind[, , "1"], data_wind[, , "2"], data_wind[, , "3"], data_wind[, , "4"],
                               data_wind[, , "5"], data_wind[, , "6"], data_wind[, , "7"], data_wind[, , "8"], data_wind[, , "9"])
     data_hydro <- calcOutput("PotentialHydro", aggregate = FALSE)
-    #data_solar <- calcOutput("Solar", aggregate = FALSE)
+    # data_solar <- calcOutput("Solar", aggregate = FALSE)
     data_solar <- calcOutput("Solar")
     names_solarPV <- paste0("SolarPV.", getNames(collapseNames((mselect(data_solar, type = c("nur", "maxprod"), technology = "spv")), collapsedim = 2)))
     names_solarCSP <- paste0("SolarCSP.", getNames(collapseNames((mselect(data_solar, type = c("nur", "maxprod"), technology = "csp")), collapsedim = 2)))
     names_hydro <- paste0("Hydro.", getNames(data_hydro))
     names_wind <- paste0("Wind.", getNames(data_wind_sorted))
-    data_combined <- new.magpie(getItems(data_hydro, dim=1), NULL, c(names_solarPV, names_solarCSP, names_hydro, names_wind))
+    data_combined <- new.magpie(getItems(data_hydro, dim = 1), NULL, c(names_solarPV, names_solarCSP, names_hydro, names_wind))
     data_combined[, , "Hydro"] <- data_hydro
     data_combined[, , "Wind"] <- data_wind_sorted
 
@@ -156,11 +156,11 @@ convertREN21 <- function(x, subtype) {
     # data_combined[c("KOR"), , "SolarPV"][, , "nur"]  <- as.vector(data_solar[c("JPN", "GRC"), , "nur"][, , "spv"])
     # data_combined[c("KOR"), , "SolarCSP"][, , "maxprod"]  <- as.vector(data_solar[c("GRC", "GRC"), , "maxprod"][, , "csp"])
     # data_combined[c("KOR"), , "SolarCSP"][, , "nur"]  <- as.vector(data_solar[c("JPN", "GRC"), , "nur"][, , "csp"])
-    
-    data_combined[c("MKD"), , c("SolarPV","SolarCSP")][, , c("maxprod","nur")]  <- as.vector(data_solar[c("JPN"), , c("spv","csp")][, , c("maxprod","nur")])
-    data_combined[c("KOR"), , c("SolarPV","SolarCSP")][, , c("maxprod","nur")]  <-  as.vector(data_solar[c("JPN"), , c("spv","csp")][, , c("maxprod","nur")])
-    
-    data_combined <- data_combined[getItems(x_tmp, dim=1), , ] # only interested in limited dataset
+
+    data_combined[c("MKD"), , c("SolarPV", "SolarCSP")][, , c("maxprod", "nur")]  <- as.vector(data_solar[c("JPN"), , c("spv", "csp")][, , c("maxprod", "nur")])
+    data_combined[c("KOR"), , c("SolarPV", "SolarCSP")][, , c("maxprod", "nur")]  <-  as.vector(data_solar[c("JPN"), , c("spv", "csp")][, , c("maxprod", "nur")])
+
+    data_combined <- data_combined[getItems(x_tmp, dim = 1), , ] # only interested in limited dataset
 
     for (n in getNames(data_combined, dim = 1)) {
       name <- paste0(n, ".maxprod")
@@ -169,7 +169,7 @@ convertREN21 <- function(x, subtype) {
     }
 
     final <- numeric(nregions(x_tmp))
-    names(final) <- getItems(x_tmp,dim=1)
+    names(final) <- getItems(x_tmp, dim = 1)
     tmp_target <- numeric(10)
     x_cap_pt_2_tic <- x_cap
     x_cap_pt_2_tic[] <- 0

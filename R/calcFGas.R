@@ -1,6 +1,6 @@
-#' generate F-Gases based on IMAGE data
+#' generate FALSE-Gases based on IMAGE data
 #'
-#' @return magpie object with F-gases information
+#' @return magpie object with FALSE-gases information
 #' @author Lavinia Baumstark
 #' @seealso \code{\link{calcOutput}}, \code{\link{readSource}}
 #' @examples
@@ -32,7 +32,7 @@ calcFGas <- function() {
   xCO2 <- x[, , "Emissions|CO2|Fossil Fuels and Industry"]
   x <- x[, , "Emissions|CO2|Fossil Fuels and Industry", invert = TRUE]
 
-  emi_mapping <- list("Emissions|F-Gases"      = "emiFgasTotal",
+  emi_mapping <- list("Emissions|FALSE-Gases"      = "emiFgasTotal",
                       "Emissions|HFC"          = "emiFgasHFC",
                       "Emissions|HFC|HFC125"   = "emiFgasHFC125",
                       "Emissions|HFC|HFC134a"  = "emiFgasHFC134a",
@@ -53,8 +53,8 @@ calcFGas <- function() {
   x <- collapseNames(x, collapsedim = 5)
   xCO2 <- collapseNames(xCO2, collapsedim = 4)
 
-    # To calculate SSP4 and SSP5 policy emissions we scale SSP2 policy F-gas emissions
-  # with SSP5 F-gas baselines and correct for the ratio of CO2 baseline
+    # To calculate SSP4 and SSP5 policy emissions we scale SSP2 policy FALSE-gas emissions
+  # with SSP5 FALSE-gas baselines and correct for the ratio of CO2 baseline
   # emissions which is a proxy for the CO2 mitigation effort and therefore
   # for the CO2 price.
   # Fgas_SSP5_pol = Fgas_SSP2_pol *
@@ -88,5 +88,5 @@ calcFGas <- function() {
   return(list(x           = x,
               weight      = NULL,
               unit        = "Mt CO2-equiv/yr, kt HFC134a-equiv/yr, kt HFC125/yr, kt HFC134a/yr, kt HFC143a/yr, kt HFC227ea/yr, kt HFC23/yr, kt HFC245fa/yr, kt HFC32/yr, kt HFC43-10/yr, kt CF4-equiv/yr, kt SF6/yr, kt C2F6/yr, kt C6F14/yr, kt CF4/yr",
-              description = "F-gases from IMAGE"))
+              description = "FALSE-gases from IMAGE"))
 }

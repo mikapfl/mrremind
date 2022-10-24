@@ -5,11 +5,11 @@
 #' @author Falk Benke
 #' @importFrom dplyr filter %>% distinct group_by ungroup
 #' @importFrom rlang sym
-#' 
+#'
 
 readIEA_WEO_2021 <- function() {
   variable <- NULL
-  
+
   data <- rbind(
     read.csv(file = "WEO2021_Free_Data_Regions.csv")  %>% mutate(source := "A"),
     read.csv(file = "WEO2021_Free_Data_Supply_Refining.csv") %>% mutate(source := "B"),
@@ -21,7 +21,7 @@ readIEA_WEO_2021 <- function() {
     group_by(!!sym("Region"), !!sym("year"), !!sym("Scenario"), !!sym("variable")) %>%
     distinct() %>%
     ungroup()
-  
+
   x <- as.magpie(data, temporal = 2, spatial = 1, datacol = 5)
   x <- magpiesort(x)
 

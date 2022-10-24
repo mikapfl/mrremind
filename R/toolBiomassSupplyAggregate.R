@@ -14,7 +14,7 @@
 #' @importFrom dplyr %>% mutate select rename left_join
 #' @importFrom quitte as.quitte
 
-toolBiomassSupplyAggregate <- function(x, rel=NULL, weight = calcOutput("FAOLand", aggregate = F)[,,"6610",pmatch=TRUE][,"y2010",]){
+toolBiomassSupplyAggregate <- function(x, rel = NULL, weight = calcOutput("FAOLand", aggregate = FALSE)[, , "6610", pmatch = TRUE][, "y2010", ]) {
 
   # variable definitions needed for data.frame operations below
   region <- NULL
@@ -44,15 +44,15 @@ toolBiomassSupplyAggregate <- function(x, rel=NULL, weight = calcOutput("FAOLand
                  rename(Total = value))) %>%
     mutate(value = value / Total) %>%
     # if no agricultural area at all -> assume very low share of 1e-5
-    mutate( value = ifelse(value == 0, 1e-5, value)) %>%
+    mutate(value = ifelse(value == 0, 1e-5, value)) %>%
     select(country, value) %>%
-    data.frame %>%
-    as.magpie(spatial = 1, datacol=2) %>%
+    data.frame() %>%
+    as.magpie(spatial = 1, datacol = 2) %>%
     dimReduce()
 
   # multiply slope parameter with agricultural land share
   x <- x
-  x[,,"b"] <- x[,,"b"] * AgrLandShare
+  x[, , "b"] <- x[, , "b"] * AgrLandShare
 
   # select one country per region (first country in alphabet) to set weight = 1,
   # rest of countries weight 0
@@ -61,7 +61,7 @@ toolBiomassSupplyAggregate <- function(x, rel=NULL, weight = calcOutput("FAOLand
   iso.sel <- rel.sort$country[cumsum(table(rel.sort$region))]
 
   weight <- new.magpie(getRegions(x), fill = 0)
-  weight[iso.sel,,] <- 1
+  weight[iso.sel, , ] <- 1
 
   # aggregate to regionmapping, take a and b value only of one country within the region,
   # other weights are 0
